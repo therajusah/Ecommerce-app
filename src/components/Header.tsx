@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { colors, spacing } from '../styles/globalStyles';
 import { useCart } from '../context/CartContext';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 
 interface HeaderProps {
   title?: string;
@@ -32,10 +27,13 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const { getCartItemsCount } = useCart();
   const cartItemsCount = getCartItemsCount();
+  const insets = useSafeAreaInsets();
 
+  const SAFE_AREA_PULL_UP = 60;
+  const topInset = Math.max(0, insets.top - SAFE_AREA_PULL_UP);
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="light" backgroundColor={colors.primary} />
+    <SafeAreaView style={[styles.safeArea, { paddingTop: topInset }]} edges={['top']}>
+      <StatusBar style="light" />
       <View style={styles.header}>
         <View style={styles.leftSection}>
           {showBack && onBack && (
@@ -82,8 +80,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    minHeight: 60,
+    paddingVertical: spacing.xs,
+    minHeight: 20,
   },
   leftSection: {
     flexDirection: 'row',

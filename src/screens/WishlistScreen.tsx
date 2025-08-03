@@ -15,6 +15,19 @@ import { useCart } from '../context/CartContext';
 import Header from '../components/Header';
 import CustomAlert from '../components/CustomAlert';
 import { NavigationProp } from '../types/navigation';
+import { products } from '../data/products';
+
+interface WishlistItem {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+  image: string;
+  category: string;
+  rating: number;
+  inStock: boolean;
+}
 
 interface WishlistScreenProps {
   navigation: NavigationProp;
@@ -50,7 +63,7 @@ const WishlistScreen: React.FC<WishlistScreenProps> = ({ navigation }) => {
     removeFromWishlist(productId);
   };
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: WishlistItem) => {
     addToCart(product);
     showCustomAlert(
       'Added to Cart!',
@@ -60,8 +73,11 @@ const WishlistScreen: React.FC<WishlistScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleProductPress = (product: any) => {
-    navigation.navigate('ProductDetail', { product });
+  const handleProductPress = (wishlistItem: WishlistItem) => {
+    const product = products.find(p => p.id === wishlistItem.id);
+    if (product) {
+      navigation.navigate('ProductDetail', { product });
+    }
   };
 
   const handleClearWishlist = () => {
@@ -76,7 +92,7 @@ const WishlistScreen: React.FC<WishlistScreenProps> = ({ navigation }) => {
     );
   };
 
-  const renderWishlistItem = ({ item }: { item: any }) => (
+  const renderWishlistItem = ({ item }: { item: WishlistItem }) => (
     <View style={styles.itemContainer}>
       <TouchableOpacity
         style={styles.productInfo}

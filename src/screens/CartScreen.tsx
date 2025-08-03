@@ -15,6 +15,14 @@ import CartItem from '../components/CartItem';
 import CustomAlert from '../components/CustomAlert';
 import { NavigationProp } from '../types/navigation';
 
+interface CartItemType {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
 interface CartScreenProps {
   navigation: NavigationProp;
 }
@@ -95,7 +103,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     );
   };
 
-  const renderCartItem = ({ item }: { item: any }) => <CartItem item={item} />;
+  const renderCartItem = ({ item }: { item: CartItemType }) => <CartItem item={item} />;
 
   const renderEmptyCart = () => (
     <View style={styles.emptyContainer}>

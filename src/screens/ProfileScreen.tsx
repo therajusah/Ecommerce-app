@@ -13,9 +13,17 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import Header from '../components/Header';
 import CustomAlert from '../components/CustomAlert';
+import { NavigationProp } from '../types/navigation';
+
+interface MenuItem {
+  icon: string;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+}
 
 interface ProfileScreenProps {
-  navigation: any;
+  navigation: NavigationProp;
 }
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
@@ -26,10 +34,18 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     title: '',
     message: '',
     icon: '',
-    buttons: [] as any[]
+    buttons: [] as Array<{
+      text: string;
+      style?: 'default' | 'cancel' | 'destructive';
+      onPress?: () => void;
+    }>
   });
 
-  const showCustomAlert = (title: string, message: string, icon: string, buttons: any[]) => {
+  const showCustomAlert = (title: string, message: string, icon: string, buttons: Array<{
+    text: string;
+    style?: 'default' | 'cancel' | 'destructive';
+    onPress?: () => void;
+  }>) => {
     setAlertConfig({ title, message, icon, buttons });
     setShowAlert(true);
   };
@@ -66,19 +82,25 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const menuItems = [
     {
       icon: 'bag-outline',
-      title: 'Order History',
-      subtitle: 'View your past orders',
-      onPress: () => navigation.navigate('TrackOrderTab'),
+      title: 'My Orders',
+      subtitle: 'View your order history and track deliveries',
+      onPress: () => navigation.navigate('TrackOrder'),
     },
     {
       icon: 'heart-outline',
-      title: 'Wishlist',
-      subtitle: 'Your favorite items',
-      onPress: () => navigation.navigate('WishlistTab'),
+      title: 'My Wishlist',
+      subtitle: 'Your favorite items and saved products',
+      onPress: () => navigation.navigate('Wishlist'),
+    },
+    {
+      icon: 'cart-outline',
+      title: 'My Cart',
+      subtitle: 'View items in your shopping cart',
+      onPress: () => navigation.navigate('Cart'),
     },
     {
       icon: 'location-outline',
-      title: 'Addresses',
+      title: 'My Addresses',
       subtitle: 'Manage delivery addresses',
       onPress: () => showCustomAlert('Coming Soon', 'Address management coming soon!', 'information-circle', [{ text: 'OK', style: 'default' }]),
     },
@@ -114,7 +136,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     },
   ];
 
-  const renderMenuItem = (item: any, index: number) => (
+  const renderMenuItem = (item: MenuItem, index: number) => (
     <TouchableOpacity
       key={index}
       style={styles.menuItem}
@@ -123,7 +145,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     >
       <View style={styles.menuItemLeft}>
         <View style={styles.iconContainer}>
-          <Ionicons name={item.icon as any} size={24} color={colors.primary} />
+          <Ionicons name={item.icon as keyof typeof Ionicons.glyphMap} size={24} color={colors.primary} />
         </View>
         <View style={styles.menuItemText}>
           <Text style={styles.menuItemTitle}>{item.title}</Text>
@@ -145,9 +167,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
               <Image
                 source={{ uri: user?.avatar }}
                 style={styles.avatar}
+                defaultSource={require('../../assets/icon.png')}
               />
-              <Text style={styles.userName}>{user?.name}</Text>
-              <Text style={styles.userEmail}>{user?.email}</Text>
+              <Text style={styles.userName}>{user?.name || 'User'}</Text>
+              <Text style={styles.userEmail}>{user?.email || 'user@example.com'}</Text>
               
               <TouchableOpacity
                 style={styles.editButton}

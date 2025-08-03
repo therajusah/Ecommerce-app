@@ -15,9 +15,10 @@ import type { Product } from '../data/products';
 interface ProductCardProps {
   product: Product;
   onPress: () => void;
+  showAddToCart?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, showAddToCart = true }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
@@ -117,7 +118,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
         <View style={styles.footer}>
           <Text style={styles.categoryText}>{product.category}</Text>
           
-          {product.inStock && (
+          {product.inStock && showAddToCart && (
             <TouchableOpacity
               style={globalStyles.addToCartButton}
               onPress={handleAddToCart}

@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
-import { AuthProvider } from './src/context/AuthContext';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { CartProvider } from './src/context/CartContext';
 import { WishlistProvider } from './src/context/WishlistContext';
 import { OrderProvider } from './src/context/OrderContext';
@@ -27,41 +27,40 @@ const Stack = createStackNavigator();
 
 const HomeStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
   );
 };
 
 const WishlistStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Wishlist" component={WishlistScreen} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
   );
 };
 
 const TrackOrderStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="TrackOrder" component={TrackOrderScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
   );
 };
 
 const ProfileStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="TrackOrder" component={TrackOrderScreen} />
+      <Stack.Screen name="Wishlist" component={WishlistScreen} />
+      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
     </Stack.Navigator>
   );
 };
@@ -89,6 +88,7 @@ const renderTabIcon = (routeName: string, focused: boolean, color: string, size:
 const TabNavigator = () => {
   return (
     <Tab.Navigator
+      id={undefined}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => renderTabIcon(route.name, focused, color, size),
         tabBarActiveTintColor: colors.primary,
@@ -141,17 +141,31 @@ const TabNavigator = () => {
   );
 };
 
+const AuthWrapper: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
+      {isAuthenticated() ? (
+        <Stack.Screen name="MainApp" component={TabNavigator} />
+      ) : (
+        <Stack.Screen name="Login" component={LoginScreen} />
+      )}
+    </Stack.Navigator>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
-          <OrderProvider>
-            <NavigationContainer>
-              <StatusBar style="light" backgroundColor={colors.primary} />
-              <TabNavigator />
-            </NavigationContainer>
-          </OrderProvider>
+        <OrderProvider>
+          <NavigationContainer>
+            <StatusBar style="light" />
+            <AuthWrapper />
+          </NavigationContainer>
+        </OrderProvider>
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>

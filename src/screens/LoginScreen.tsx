@@ -27,7 +27,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loading } = useAuth();
+  const { login, register, loading } = useAuth();
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
@@ -40,6 +40,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       onPress?: () => void;
     }>
   });
+
+
 
   const showCustomAlert = (title: string, message: string, icon: string, buttons: Array<{
     text: string;
@@ -61,18 +63,40 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       return;
     }
 
-    const result = await login(email, password);
+    if (!isLogin && !name) {
+      showCustomAlert(
+        'Error',
+        'Please enter your full name',
+        'alert-circle',
+        [{ text: 'OK', style: 'default' }]
+      );
+      return;
+    }
+
+    let result;
+    if (isLogin) {
+      result = await login(email, password);
+    } else {
+      result = await register(name, email, password);
+    }
+
     if (result.success) {
       showCustomAlert(
         'Success',
-        'Login successful!',
+        isLogin ? 'Login successful!' : 'Registration successful!',
         'checkmark-circle',
-        [{ text: 'OK', style: 'default' }]
+        [{ 
+          text: 'OK', 
+          style: 'default',
+          onPress: () => {
+            navigation.navigate('HomeTab');
+          }
+        }]
       );
     } else {
       showCustomAlert(
-        'Login Failed',
-        result.message || 'Invalid credentials',
+        isLogin ? 'Login Failed' : 'Registration Failed',
+        result.message || (isLogin ? 'Invalid credentials' : 'Registration failed'),
         'alert-circle',
         [{ text: 'OK', style: 'default' }]
       );

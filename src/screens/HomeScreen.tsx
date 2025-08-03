@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, globalStyles } from '../styles/globalStyles';
 import { products, categories } from '../data/products';
 import ProductCard from '../components/ProductCard';
+import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
 import { NavigationProp } from '../types/navigation';
 
@@ -74,7 +75,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       />
       
       {filteredProducts.length === 0 ? (
-        <ScrollView style={styles.content}>
+        <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
           <HomeHeader 
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -97,6 +98,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <ProductCard 
                 product={item} 
                 onPress={() => handleProductPress(item)} 
+                showAddToCart={false}
               />
             </View>
           )}
@@ -104,7 +106,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           numColumns={2}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.productsList}
-          ListHeaderComponent={() => (
+          ListHeaderComponent={
             <HomeHeader 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -112,7 +114,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               onCategoryPress={handleCategoryPress}
               filteredProducts={filteredProducts}
             />
-          )}
+          }
+          keyboardShouldPersistTaps="handled"
           ItemSeparatorComponent={() => <View style={{ height: spacing.xs }} />}
         />
       )}
@@ -136,13 +139,6 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   filteredProducts,
 }) => (
   <View style={styles.headerContent}>
-    <View style={styles.logoSection}>
-      <View style={styles.logoContainer}>
-        <Text style={styles.logoMy}>My</Text>
-        <Text style={styles.logoShop}>Shop</Text>
-      </View>
-    </View>
-
     <View style={styles.searchContainer}>
       <Ionicons name="search" size={20} color={colors.gray} style={styles.searchIcon} />
       <TextInput
@@ -150,6 +146,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         placeholder="Search for products, brands and more"
         value={searchQuery}
         onChangeText={setSearchQuery}
+        returnKeyType="search"
+        blurOnSubmit={false}
         placeholderTextColor={colors.gray}
       />
       {searchQuery ? (
@@ -157,6 +155,17 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           <Ionicons name="close" size={20} color={colors.gray} />
         </TouchableOpacity>
       ) : null}
+    </View>
+
+    <View style={styles.carouselWrapper}>
+      <ImageCarousel
+        images={[
+          'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=2069&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1620012253295-8fa4b0ccf33c?q=80&w=2069&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2069&auto=format&fit=crop',
+        ]}
+        height={180}
+      />
     </View>
 
     <View style={styles.categoriesSection}>
@@ -208,7 +217,10 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
+  },
+  carouselWrapper: {
+    marginBottom: spacing.lg,
   },
   logoSection: {
     alignItems: 'center',
@@ -236,7 +248,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    marginVertical: spacing.lg,
+    marginVertical: spacing.md,
     ...globalStyles.shadow,
   },
   searchIcon: {

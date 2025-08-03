@@ -160,7 +160,7 @@ const TrackOrderScreen: React.FC<TrackOrderScreenProps> = ({ navigation }) => {
     });
   };
 
-  const renderTrackingStep = ({ item, index }: { item: any; index: number }) => {
+  const renderTrackingStep = ({ item, index }: { item: TrackingStep; index: number }) => {
     const isCompleted = item.completed;
     const isLast = index === selectedOrder!.trackingSteps.length - 1;
 
@@ -209,7 +209,7 @@ const TrackOrderScreen: React.FC<TrackOrderScreenProps> = ({ navigation }) => {
         
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
           <Ionicons 
-            name={getStatusIcon(item.status) as any} 
+            name={getStatusIcon(item.status) as keyof typeof Ionicons.glyphMap} 
             size={16} 
             color={colors.white} 
           />
